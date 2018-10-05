@@ -21,6 +21,11 @@ def deconvolve(star, psf):
     return fftpack.fftshift(fftpack.ifftn(fftpack.ifftshift(star_fft/psf_fft)))
 
 
+def fwhm(sigma):
+  # Computes the FWHM from sigma for a Gaussian
+  return 2.0*np.sqrt(2.0*np.log(2.0))*sigma
+
+
 # load data
 fName = 'psf_8um_bead.pxp'
 igorData = igor.load(fName)
@@ -100,7 +105,7 @@ fig , ax = plt.subplots(nrows=4,figsize=(6,10))
 ax[0].plot(x*1e6,xProfile,label="x profile", lw=3 )
 ax[0].plot(y*1e6,yProfile,label="y profile", lw=3 )
 ax[1].plot(z*1e6,zProfile,label="z profile", lw=3 )
-ax[1].plot(z*1e6,fittedGaussian,label="z fitted", lw=3 )
+ax[1].plot(z*1e6,fittedGaussian,label="z fitted, fwhm = %s" % round(fwhm(p1[1]),2), lw=3 )
 #ax[0].plot(filtered/np.sum(gauss(np.arange(50),4,25.)),label="convoluted b waveform", lw=3 )
 # we need to divide by the sum of the filter window to get the convolution normalized to 1
 #ax[1].plot(z*1e6,zProfile, label="z profile" ,  lw=3 )
@@ -109,7 +114,7 @@ ax[2].plot(beadsWaveForm,'o-',label="beads waveform",lw=3 )
 
 ax[1].plot(z*1e6,convolutionZ,label="convolution fit with bead", lw=3 )
 #ax[3].plot(np.real(pointSpreadFx2),label="deconvolution", lw=3 )
-ax[3].plot(z*1e6,psf,label=r"point-spread function, $\sigma = %s$" % np.round(q1[1],2), lw=3 )
+ax[3].plot(z*1e6,psf,label=r"point-spread function, $\sigma = %s$, fwhm = %s" % (np.round(q1[1],2),round(fwhm(q1[1]),2)), lw=3 )
 
 #ax[0].set_xlabel(r'distance ($\mu$m)')
 ax[3].set_xlabel(r'distance ($\mu$m)')
